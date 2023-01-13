@@ -89,9 +89,9 @@
     width: 95%;
     border-radius: 10px;
     height: 120px;
-    margin-top: 23%;
     border: 1px solid #6f6f6f;
     position: absolute;
+    top: 35%;
     left: 2%;
 }
 
