@@ -1,8 +1,9 @@
-*{
+* {
     margin: 0;
-    padding:0;
+    padding: 0;
 }
-.sideBar{
+
+.sideBar {
     width: 10%;
     top: 0px;
     bottom: 0px;
@@ -12,105 +13,197 @@
     flex-direction: column;
     align-items: center;
 }
-.online{
-    margin: 20px;
-    color: rgba(255,255,255,.8);
-}
-.sideBar p{
-    margin-left: 15px;
-    padding:2px
-}
-.offline{
-    color: rgba(255,255,255,.2)
+
+.manageGroup {
+    margin-left: 20px;
+    padding: 7px 10px;
+    border: 1px solid #9b9b9b;
+    background: transparent;
+    color: #9b9b9b;
+    border-radius: 10px;
 }
 
-.chatBox{
+.button {
+    color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+    background-color: transparent;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#leaveGroup {
+    top: 85%;
+    left: 80%;
+    background-color: red;
+    border: none;
+    position: absolute;
+}
+
+.addMember {
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+.removeMember {
+    position: absolute;
+    margin-top: 60px;
+    margin-left: 10px;
+}
+
+#removeMember {
+    margin-right: 10px;
+    font-size: 12px;
+    padding: 6px;
+}
+
+#addMember {
+    margin-right: 10px;
+    font-size: 12px;
+    padding: 6px 15px;
+}
+
+.exit {
+    color: #d4d4d4;
+    background-color: transparent;
+    padding: 5px;
+    border: none;
+    font-size: 15px;
+    margin: 5px;
+    position: absolute;
+    left: 93%;
+}
+
+.manageGroupModal {
+    width: 45%;
+    height: 300px;
+    position: absolute;
+    left: 22%;
+    background-color: #2f2f2f;
+    border: solid 2px #9b9b9b;
+    border-radius: 10px;
+    display: none;
+}
+
+.memberList {
+    width: 95%;
+    border-radius: 10px;
+    height: 120px;
+    margin-top: 23%;
+    border: 1px solid #6f6f6f;
+    position: absolute;
+    left: 2%;
+}
+
+.online {
+    margin: 20px;
+    color: rgba(255, 255, 255, .8);
+}
+
+.sideBar p {
+    margin-left: 15px;
+    padding: 2px
+}
+
+.offline {
+    color: rgba(255, 255, 255, .2)
+}
+
+.chatBox {
     width: 90%;
     margin-left: 10%;
-    background-color:#202020;
+    background-color: #202020;
     position: absolute;
     top: 0px;
     bottom: 15%;
     overflow: auto;
 }
-.chatHeader{
+
+.chatHeader {
     width: auto;
-    height:70px;
+    height: 70px;
     background-color: #2f2f2f;
     border-left: #202020 2px solid;
 }
-.chatHeader h2{
-    color:#9b9b9b;
-    padding:10px 30px
+
+.chatHeader h2 {
+    color: #9b9b9b;
+    padding: 10px 30px
 }
 
 /*scrollbar*/
-::-webkit-scrollbar{
+::-webkit-scrollbar {
     width: 10px;
 }
-::-webkit-scrollbar-track{
+
+::-webkit-scrollbar-track {
     background-color: #2f2f2f;
 }
 
-::-webkit-scrollbar-thumb{
+::-webkit-scrollbar-thumb {
     background-color: #818181;
     border-radius: 20px;
 }
 
-.messageBox{
+.messageBox {
     border-top: #2f2f2f 2px solid;
     width: 90%;
     position: absolute;
     margin-left: 10%;
     top: 85%;
-    bottom:0px;
-    background-color:#202020;
+    bottom: 0px;
+    background-color: #202020;
     display: flex;
     justify-content: center;
     align-items: center;
 
 }
-.greetingUser{
-    padding:20px;
-    color:#eeeeee;
+
+.greetingUser {
+    padding: 20px;
+    color: #eeeeee;
     font-size: 23px;
 }
 
-.logoutButton{
-    padding: 7px 5px;
-    font-size: 16px;
+.logoutButton {
+    padding: 5px 7px;
+    font-size: 13px;
     border-radius: 8px;
     border-color: transparent;
     position: absolute;
-    top:93%;
+    top: 93%;
 }
-.chatGroup{
-    margin:10px 20px;
+
+.chatGroup {
+    margin: 10px 20px;
     padding: 10px;
     font-size: 20px;
-    color:#d4d4d4;
+    color: #d4d4d4;
     border-bottom: 1px solid #818181;
     display: flex;
 }
-.chatGroupDate{
+
+.chatGroupDate {
     font-size: 13px;
     margin-top: 7px;
     position: absolute;
-    left:87%;
+    left: 87%;
 }
-.homeFiller{
+
+.homeFiller {
     border-top: #2f2f2f 2px solid;
     width: 90%;
     position: absolute;
     margin-left: 10%;
     top: 85%;
-    bottom:0px;
-    background-color:#202020;
+    bottom: 0px;
+    background-color: #202020;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.inputBox{
+
+.inputBox {
     width: 90%;
     height: 30%;
     background-color: #2f2f2f;
@@ -118,7 +211,8 @@
     display: flex;
     justify-content: flex-start;
 }
-.input{
+
+.input {
     background-color: transparent;
     border-style: none;
     margin-left: 2%;
@@ -128,26 +222,30 @@
     color: #d4d4d4;
 }
 
-.messageContainer{
+.messageContainer {
     width: 90%;
     padding: 1px 20px 10px 20px;
     border-radius: 10px;
     margin: 40px 20px;
 }
-.messageHeader{
+
+.messageHeader {
     display: flex;
     flex-direction: row;
 }
-.messageUser{
+
+.messageUser {
     margin-bottom: 5px;
-    color:#eeeeee;
+    color: #eeeeee;
 }
-.date{
+
+.date {
     margin-top: 12px;
     margin-left: 2%;
     color: #6f6f6f;
 }
-.message{
+
+.message {
     margin-left: 15px;
-    color:#d4d4d4;
+    color: #d4d4d4;
 }

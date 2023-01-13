@@ -1,123 +1,142 @@
 //socket.IO
 //npm install socket.io
-const io = require('socket.io')(8000,{
-    cors:{
-        origin:["http://localhost:3000"]
+const io = require('socket.io')(8000, {
+    cors: {
+        origin: ["http://localhost:3000"]
     }
 })
 
-io.on('connection',socket =>{ 
+io.on('connection', socket => {
     console.log("connected")
 
 
-    socket.on("signIn",(username,id)=>{
+    socket.on("signIn", (username, id) => {
         let result = checkMembers(username);
-        if(result === true){
+        if (result === true) {
             let userStatus = "online";
-            updateMemberStatus(username,userStatus);
-            io.emit("updatedMemberList",members);
+            updateMemberStatus(username, userStatus);
+            io.emit("updatedMemberList", members);
         }
-        io.to(id).emit("signInResponse",result,members);
+        io.to(id).emit("signInResponse", result, members);
     })
 
-    socket.on("createAccount",(username,id)=>{
+    socket.on("createAccount", (username, id) => {
         let result = checkMembers(username);
-        if(result === false){
-            members.push({user:username,status:"offline",id:id});
+        if (result === false) {
+            members.push({ user: username, status: "offline", id: id });
         }
-        io.to(id).emit("createAccountResponse",result);
+        io.to(id).emit("createAccountResponse", result);
     })
 
-    socket.on("getMemberList",()=>{
-        io.emit("updatedMemberList",members);
+    socket.on("getMemberList", () => {
+        io.emit("updatedMemberList", members);
     })
 
-    socket.on("logout",username=>{
+    socket.on("logout", username => {
         let userStatus = "offline";
-        updateMemberStatus(username,userStatus);
-        io.emit("updatedMemberList",members);
+        updateMemberStatus(username, userStatus);
+        io.emit("updatedMemberList", members);
     })
 
-    socket.on("uploadMessage",(message,room)=>{
+    socket.on("uploadMessage", (message, room) => {
 
-        memberMessages.push({message:message,room:room});
+        memberMessages.push({ message: message, room: room });
 
         let messages = getMessages(room);
 
-        io.to(room).emit("retrievedMessages",messages);
+        io.to(room).emit("retrievedMessages", messages);
 
     })
-    socket.on("getMessages",room=>{
+    socket.on("getMessages", room => {
         let messages = getMessages(room);
-        io.to(room).emit("retrievedMessages",messages);
+        io.to(room).emit("retrievedMessages", messages);
     })
 
-    socket.on("getRoom",(user1,user2,date)=>{
-        var roomIndex = getRoom(user1,user2);
+    socket.on("getRoom", (user1, user2, date) => {
+        var roomIndex = getRoom(user1, user2);
 
-        if(roomIndex != -1){ //room exists
+        if (roomIndex != -1) { //room exists
             let roomNumber = rooms[roomIndex].roomNumber;
             socket.join(roomNumber);
-            io.emit("retrievedRoom",roomNumber);   
+            io.emit("retrievedRoom", roomNumber);
         }
-        else{ //room does not exist (needs to be created)
+        else { //room does not exist (needs to be created)
             const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var roomNumber = "";
-            for(let i = 0;i<5;i++){
+            for (let i = 0; i < 5; i++) {
                 roomNumber += characters.charAt(Math.floor(Math.random() * characters.length));
             }
-            rooms.push({user1:user1,user2:user2,roomNumber:roomNumber,createdDate:date});
+            rooms.push({ user1: user1, user2: user2, roomNumber: roomNumber, createdDate: date });
             socket.join(roomNumber);
-            io.emit("retrievedRoom",roomNumber);
+            io.emit("retrievedRoom", roomNumber);
         }
     })
-    socket.on("getChatGroups",(user,id)=>{
+    socket.on("getChatGroups", (user, id) => {
 
         let users = getChatGroups(user);
-        var groups = [];
-        for(let i=0; i<users.length; i++){
-            groups[i] = {user:users[i].user, date:users[i].date}
-        }
 
-        io.to(id).emit("retrievedChatGroups",groups);
+        io.to(id).emit("retrievedChatGroups", users);
     })
-    
+
+    socket.on("leaveGroup", (user, room) => {
+        leaveGroup(user, room);
+        console.log("works on server");
+        io.emit("updatedChatGroups");
+    })
+
+    socket.on("addMember", room => {
+
+    })
+
 })
 var members = [];
 var memberMessages = [];
 var rooms = [];
 
-const checkMembers = (user)=>{
-    for(let i = 0;i < members.length;i++){
-        if(members[i].user === user){
+const checkMembers = (user) => {
+    for (let i = 0; i < members.length; i++) {
+        if (members[i].user === user) {
             return true;
         }
     }
     return false;
 }
 
-const updateMemberStatus = (user,userStatus)=>{
-    for(let i = 0;i < members.length;i++){
-        if(members[i].user === user){
+const leaveGroup = (user, room) => {
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].roomNumber === room) {
+            if (rooms[i].user1 === user) {
+                rooms[i].user1 = user + " (is no longer in group)";
+            }
+            else if (rooms[i].user2 === user) {
+                rooms[i].user2 = user + " ( is no longer in group )";
+            }
+        }
+    }
+}
+
+const updateMemberStatus = (user, userStatus) => {
+    for (let i = 0; i < members.length; i++) {
+        if (members[i].user === user) {
             members[i].status = userStatus;
         }
     }
 }
 
-const getRoom = (user1,user2) => {
-    for(let i = 0;i<rooms.length;i++){
-        if(rooms[i].user1 === user1 &&rooms[i].user2 === user2 || rooms[i].user1 === user2 &&rooms[i].user2 === user1){
+const getRoom = (user1, user2) => {
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].user1 === user1 && rooms[i].user2 === user2 || rooms[i].user1 === user2 && rooms[i].user2 === user1) {
             return i;
         }
     }
     return -1;
 }
 
-const getMessages =(room) =>{
+const getMessages = (room) => {
     var messages = [];
     var messageIndex = 0;
-    for(let i = 0;i<memberMessages.length;i++){
-        if(memberMessages[i].room === room){
+    for (let i = 0; i < memberMessages.length; i++) {
+        if (memberMessages[i].room === room) {
             messages[messageIndex] = memberMessages[i].message;
             messageIndex++;
         }
@@ -125,16 +144,16 @@ const getMessages =(room) =>{
     return messages;
 }
 
-const getChatGroups =(user) =>{
+const getChatGroups = (user) => {
     var group = [];
     var groupIndex = 0;
-    for(let i = 0;i<rooms.length;i++){
-        if(rooms[i].user1 === user){
-            group[groupIndex] = {user: rooms[i].user2,date: rooms[i].createdDate};
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].user1 === user) {
+            group[groupIndex] = { user: rooms[i].user2, date: rooms[i].createdDate, room: rooms[i].roomNumber };
             groupIndex++;
         }
-        else if(rooms[i].user2 === user){
-            group[groupIndex] = {user: rooms[i].user1,date: rooms[i].createdDate};
+        else if (rooms[i].user2 === user) {
+            group[groupIndex] = { user: rooms[i].user1, date: rooms[i].createdDate, room: rooms[i].roomNumber };
             groupIndex++;
         }
     }
