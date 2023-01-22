@@ -1,4 +1,7 @@
 //socket.IO
+
+const { createECDH } = require('crypto');
+
 //npm install socket.io
 const io = require('socket.io')(8000, {
     cors: {
@@ -80,18 +83,27 @@ io.on('connection', socket => {
 
     socket.on("leaveGroup", (user, room) => {
         leaveGroup(user, room);
-        console.log("works on server");
         io.emit("updatedChatGroups");
     })
 
-    socket.on("addMember", room => {
+    socket.on("createGroup", members => {
+        let room = createGroupRoom();
+        groupRooms.push({ members: members, room: room })
 
+        io.emit("createdGroupRoom", room);
+    })
+    socket.on("getGroupRoom", (room, id, user) => {
+        let groupRoom = getGroupRoom(user);
+        socket.join(room);
+        console.log("returned group room ", groupRoom);
+        io.to(id).emit("retrievedGroupRoom", groupRoom);
     })
 
 })
 var members = [];
 var memberMessages = [];
 var rooms = [];
+var groupRooms = [];
 
 const checkMembers = (user) => {
     for (let i = 0; i < members.length; i++) {
@@ -123,6 +135,15 @@ const updateMemberStatus = (user, userStatus) => {
     }
 }
 
+const createGroupRoom = () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var roomNumber = "";
+    for (let i = 0; i < 5; i++) {
+        roomNumber += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return roomNumber;
+}
+
 const getRoom = (user1, user2) => {
     for (let i = 0; i < rooms.length; i++) {
         if (rooms[i].user1 === user1 && rooms[i].user2 === user2 || rooms[i].user1 === user2 && rooms[i].user2 === user1) {
@@ -130,6 +151,23 @@ const getRoom = (user1, user2) => {
         }
     }
     return -1;
+}
+
+const getGroupRoom = (user) => {
+    var groupMembers = [];
+    var index = 0;
+
+
+
+    for (let i = 0; i < groupRooms.length; i++) {
+        for (let j = 0; j < groupRooms[i].members.length; j++) {
+            if (groupRooms[i].members[0] == user) {
+                groupMembers[index] = groupRooms[i].members;
+                index++;
+            }
+        }
+    }
+    return groupMembers;
 }
 
 const getMessages = (room) => {

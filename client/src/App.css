@@ -31,12 +31,23 @@
     border-radius: 5px;
 }
 
-#leaveGroup {
+#createGroup {
+    position: absolute;
     top: 85%;
-    left: 80%;
+    left: 40%;
+    background-color: rgba(0, 128, 0, 0.648);
+}
+
+#createGroupButton {
+    position: absolute;
+    top: 3.5%;
+    left: 90%;
+}
+
+#leaveGroup {
+    margin-left: 10px;
     background-color: red;
     border: none;
-    position: absolute;
 }
 
 .addMember {
@@ -221,6 +232,137 @@
     outline: none;
     color: #d4d4d4;
 }
+
+.container {
+    display: flex;
+}
+
+.form {
+    background-color: transparent;
+    height: 200px;
+    width: 50%;
+    margin-top: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.signIn {
+    background-color: transparent;
+    width: 50%;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+    justify-content: center;
+    transition: background-color 1s ease-out;
+    transition: background-color 1s ease-out;
+}
+
+.displayUser {
+    display: flex;
+    border-bottom: solid 1px #d4d4d4;
+    width: 100px;
+    margin: 10px;
+}
+
+
+
+.signInCover {
+    width: 50%;
+    background-color: rebeccapurple;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+    padding-top: 100px;
+    justify-content: center;
+    transition: bac;
+
+}
+
+/* .signIn:hover {
+    background-color: #2f2f2f;
+} */
+
+.createAccountCover {
+    background-color: rgb(167, 71, 47);
+    width: 50%;
+    top: 0px;
+    left: 50%;
+    bottom: 0;
+    position: absolute;
+    padding-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+
+
+.header {
+    color: #d4d4d4;
+    margin-top: 5%;
+}
+
+.response {
+    position: absolute;
+    top: 70%;
+    left: 40%;
+}
+
+
+
+.createAccount {
+    background-color: transparent;
+    width: 50%;
+    display: flex;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 50%;
+    justify-content: center;
+
+}
+
+.formButton {
+    width: 80%;
+    height: 40px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: solid 2px #d4d4d4;
+    font-size: 20px;
+    color: #d4d4d4;
+    margin: 20px;
+    opacity: 1;
+    transition: color 1s ease-out;
+}
+
+
+
+
+
+#logInText {
+    width: 100px;
+    width: 80%;
+    height: 40px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: solid 2px #d4d4d4;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #d4d4d4;
+}
+
+
+::placeholder {
+    color: #d4d4d4;
+
+}
+
+
+
 
 .messageContainer {
     width: 90%;
