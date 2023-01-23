@@ -56,6 +56,8 @@ io.on('connection', socket => {
     })
 
     socket.on("getRoom", (user1, user2, date) => {
+
+            
         var roomIndex = getRoom(user1, user2);
 
         if (roomIndex != -1) { //room exists
@@ -75,8 +77,8 @@ io.on('connection', socket => {
         }
     })
     socket.on("getChatGroups", (user, id) => {
-
         let users = getChatGroups(user);
+        console.log("chatGroups",users);
 
         io.to(id).emit("retrievedChatGroups", users);
     })
@@ -86,11 +88,13 @@ io.on('connection', socket => {
         io.emit("updatedChatGroups");
     })
 
-    socket.on("createGroup", members => {
-        let room = createGroupRoom();
-        groupRooms.push({ members: members, room: room })
+    socket.on("createGroup", (userID,user,members) => {
 
-        io.emit("createdGroupRoom", room);
+        let room = createGroupRoom();
+        members.push(user);
+        groupRooms.push({ members:members, room: room })
+
+        io.to(userID).emit("createdGroupRoom", room);
     })
     socket.on("getGroupRoom", (room, id, user) => {
         let groupRoom = getGroupRoom(user);
@@ -145,9 +149,12 @@ const createGroupRoom = () => {
 }
 
 const getRoom = (user1, user2) => {
+
+   
     for (let i = 0; i < rooms.length; i++) {
         if (rooms[i].user1 === user1 && rooms[i].user2 === user2 || rooms[i].user1 === user2 && rooms[i].user2 === user1) {
             return i;
+             //return index of roomNumber
         }
     }
     return -1;
@@ -157,11 +164,13 @@ const getGroupRoom = (user) => {
     var groupMembers = [];
     var index = 0;
 
+    console.log(user);
 
+    console.log(groupRooms);
 
     for (let i = 0; i < groupRooms.length; i++) {
         for (let j = 0; j < groupRooms[i].members.length; j++) {
-            if (groupRooms[i].members[0] == user) {
+            if (groupRooms[i].members[j] == user) {
                 groupMembers[index] = groupRooms[i].members;
                 index++;
             }

@@ -8,6 +8,7 @@ const socket = io("http://localhost:8000")
 export default function Home() {
 
 
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -16,20 +17,20 @@ export default function Home() {
   const [chatGroups, setChatGroups] = useState([]); //used for displaying 1 on 1 chats
   const [groups, setGroups] = useState([]); //used for displaying 1 on * chats
   const [name, setName] = useState([]);
-  const [groupMembers, setGroupMembers] = useState([name]); //used for creating a group
 
   useEffect(() => {
-    socket.emit("getMemberList"); //get online/offline members when navigated to home page
-
+    socket.emit("getMemberList") ; //get online/offline members when navigated to home page
   }, [])
 
 
   socket.on("retrievedChatGroups", groups => { //get 1 on 1 chats
-    setChatGroups(groups);
+    console.log("groups: ", groups);
+    setChatGroups(groups); //if someone leaves the group
   });
+ 
 
   socket.on("updatedChatGroups", () => { //get updated chat groups
-    socket.emit("getChatGroups", name, socket.id);
+    socket.emit("getChatGroups", location.state.name, socket.id);
   })
   socket.on("updatedMemberList", members => { //update online/offline members lists
     var online = new Array();
@@ -45,17 +46,17 @@ export default function Home() {
     setOnlineUsers(online);
     setOfflineUsers(offline);
 
-    socket.emit("getChatGroups", name, socket.id); //get 1 on 1 chats
+    socket.emit("getChatGroups",location.state.name, socket.id); //get 1 on 1 chats
+    
   })
 
   socket.on("createdGroupRoom", room => { //returns a created room
-    socket.emit("getGroupRoom", room, socket.id, name); //get the members of group room
+    socket.emit("getGroupRoom", room, socket.id,location.state.name); //get the members of group room
   })
   socket.on("retrievedGroupRoom", groupMembers => { //get group chats
     var group = [];
     var index = 0;
-    console.log(groupMembers);
-    console.log("0 index: ", groupMembers[0].length);
+    
 
     for (let i = 0; i < groupMembers.length; i++) {
       for (let j = 0; j < groupMembers[i].length; j++) {
@@ -82,6 +83,21 @@ export default function Home() {
     navigate("/home/directMessage", { state: { name: name, visitorName: groups.user } });
   };
 
+  const setCheckedUsers = ()=>{
+    let checkboxes = document.querySelectorAll("input[type=checkbox]");
+    let checkedUsers = [];
+    
+    checkboxes.forEach((checkbox,i) =>{
+      if(checkbox.checked == true){
+        checkedUsers.push(checkboxes[i].name)
+      }
+    });
+    socket.emit("createGroup",socket.id,location.state.name, checkedUsers);
+    
+    
+  }
+    
+    
 
   return (
     <div className='container'>
@@ -90,11 +106,11 @@ export default function Home() {
         <button className="logoutButton" onClick={() => logout()}>log out</button>
         <div className='online'>
           <h4>Online - {onlineUsers.length - 1}</h4>
-          {onlineUsers.filter(users => users.user != location.state.name).map(users => (<p onClick={() => { navigate("/home/directMessage", { state: { name: name, visitorName: users.user } }) }}>{users.user}</p>))}
+          {onlineUsers.filter(users => users.user != location.state.name).map(users => (<p onClick={() => { navigate("/home/directMessage", { state: { name: location.state.name, visitorName: users.user }}) }}>{users.user}</p>))}
         </div>
         <div className='offline'>
           <h4>Offline - {offlineUsers.length}</h4>
-          {offlineUsers.map(users => (<p onClick={() => { navigate("/home/directMessage", { state: { name: name, visitorName: users.user } }) }}>{users.user}</p>))}
+          {offlineUsers.map(users => (<p onClick={() => { navigate("/home/directMessage", { state: { name: location.state.name, visitorName: users.user } }) }}>{users.user}</p>))}
         </div>
       </div>
       <div className='chatBox'>
@@ -104,21 +120,19 @@ export default function Home() {
         </div>
 
         <div id="manageGroupModal" className="manageGroupModal">
-          <button className='exit' onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; document.getElementById("addMemberInput").value = ""; setGroupMembers([name]) }}>X</button>
-          <div className='addMember'>
-
-            <button className='button' id="addMember" onClick={() => { setGroupMembers(prev => [...prev, document.getElementById("addMemberInput").value + " "]) }}>add Member</button>
-
+          <button className='exit' onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; let checkboxes = document.querySelectorAll('input[type=checkbox]'); checkboxes.forEach(item=>item.checked = false)}}>X</button>
+          
+          <div className='list'>
+            {onlineUsers.filter(users => users.user != location.state.name).map((user, index) => (<div className='displayUser'><input type="checkbox" id="checkboxUser" name={user.user}  /><p style={{ padding: "5px" }} >{user.user}</p></div>))}
+            {offlineUsers.map((user, index) => (<div className='displayUser'><input type="checkbox" name={user.user} /><p style={{ padding: "5px" }} >{user.user}</p></div>))}
           </div>
-
-          {onlineUsers.filter(users => users.user != location.state.name).map((user, index) => (<div className='displayUser'><input type="checkbox" name={user.user} /><link for={user.user} style={{ padding: "5px" }} >{user.user}</link></div>))}
-          {offlineUsers.map((user, index) => (<div className='displayUser'><input type="checkbox" value="name" /><p style={{ padding: "5px" }} >{user.user}</p></div>))}
-
-          <button className='button' id='createGroup' onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; socket.emit("createGroup", groupMembers); document.getElementById("addMemberInput").value = ""; setGroupMembers([name]) }}>Create Group</button>
+          <button className='button' id='createGroup' onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; setCheckedUsers(); let checkboxes = document.querySelectorAll('input[type=checkbox]'); checkboxes.forEach(item=>item.checked = false)}}>Create Group</button>
 
         </div>
-        {groups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; socket.emit("leaveGroup", name, groups.room) }}>leave group</button></div>))}
-        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { document.getElementById("manageGroupModal").style.display = "none"; socket.emit("leaveGroup", name, groups.room) }}>leave group</button></div>))}
+
+
+        {groups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => {  socket.emit("leaveGroup",location.state.name, groups.room) }}>leave group</button></div>))}
+        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { socket.emit("leaveGroup",location.state.name, groups.room) }}>leave group</button></div>))}
       </div>
       <div className='homeFiller'>
 

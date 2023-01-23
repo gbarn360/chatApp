@@ -15,11 +15,14 @@ export default function DirectMessage() {
     const [onlineUsers,setOnlineUsers] = useState([]);
     const [offlineUsers,setOfflineUsers] = useState([]);
     const [room,setRoom] = useState();
+
     useEffect(()=>{
       let date = getDate();
       let modifiedDate = date.split(" ")[0];
       socket.emit("getMemberList"); 
+
       socket.emit("getRoom",location.state.name,location.state.visitorName,modifiedDate);
+
     },[])
 
 
@@ -74,6 +77,7 @@ export default function DirectMessage() {
     navigate("/");
   };
   const uploadMessage = (message)=>{
+    
     if(message !== ""){
       let date = getDate();
       let userMessage = {name:location.state.name,message:message,date:date};

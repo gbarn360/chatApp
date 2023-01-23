@@ -85,6 +85,10 @@
     left: 93%;
 }
 
+.list{
+    display: flex;
+    flex-wrap: wrap;
+}
 .manageGroupModal {
     width: 45%;
     height: 300px;
