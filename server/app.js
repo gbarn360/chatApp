@@ -77,14 +77,15 @@ io.on('connection', socket => {
         }
     })
     socket.on("getChatGroups", (user, id) => {
-        let users = getChatGroups(user);
-        console.log("chatGroups",users);
-
-        io.to(id).emit("retrievedChatGroups", users);
+        let singleChats = getChatGroups(user);
+        let groupChats = getGroupRoom(user)
+        console.log(groupChats);
+        io.to(id).emit("retrievedChatGroups", singleChats, groupChats);
     })
 
-    socket.on("leaveGroup", (user, room) => {
-        leaveGroup(user, room);
+    socket.on("leaveGroup", (user, room, type) => {
+
+        leaveGroup(user, room, type);
         io.emit("updatedChatGroups");
     })
 
@@ -99,7 +100,7 @@ io.on('connection', socket => {
     socket.on("getGroupRoom", (room, id, user) => {
         let groupRoom = getGroupRoom(user);
         socket.join(room);
-        console.log("returned group room ", groupRoom);
+        
         io.to(id).emit("retrievedGroupRoom", groupRoom);
     })
 
@@ -118,14 +119,34 @@ const checkMembers = (user) => {
     return false;
 }
 
-const leaveGroup = (user, room) => {
-    for (let i = 0; i < rooms.length; i++) {
-        if (rooms[i].roomNumber === room) {
-            if (rooms[i].user1 === user) {
-                rooms[i].user1 = user + " (is no longer in group)";
+const leaveGroup = (user, room,type) => {
+
+        
+
+    if(type == "singleChat"){
+        for (let i = 0; i < rooms.length; i++) {
+            if (rooms[i].roomNumber === room) {
+                if (rooms[i].user1 === user) {
+                    rooms[i].user1 = user + " (is no longer in group)";
+                }
+                else if (rooms[i].user2 === user) {
+                    rooms[i].user2 = user + " ( is no longer in group )";
+                }
             }
-            else if (rooms[i].user2 === user) {
-                rooms[i].user2 = user + " ( is no longer in group )";
+        }
+    }
+    if(type == "groupChat"){
+
+        for(let i = 0;i<groupRooms.length; i++) {
+            if(groupRooms[i].roomNumber == room) {
+
+                for(let j = 0; j < groupRooms[i].members.length; j++) {
+
+                    if(groupRooms[i].members[j] == user) {
+
+                        groupRooms[i].members[j] = user + " ( is no longer in group )";
+                    }
+                }
             }
         }
     }
@@ -164,14 +185,12 @@ const getGroupRoom = (user) => {
     var groupMembers = [];
     var index = 0;
 
-    console.log(user);
 
-    console.log(groupRooms);
 
     for (let i = 0; i < groupRooms.length; i++) {
         for (let j = 0; j < groupRooms[i].members.length; j++) {
             if (groupRooms[i].members[j] == user) {
-                groupMembers[index] = groupRooms[i].members;
+                groupMembers[index] = {members:groupRooms[i].members};
                 index++;
             }
         }
@@ -206,3 +225,4 @@ const getChatGroups = (user) => {
     }
     return group;
 }
+

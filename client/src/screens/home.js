@@ -23,14 +23,27 @@ export default function Home() {
   }, [])
 
 
-  socket.on("retrievedChatGroups", groups => { //get 1 on 1 chats
-    console.log("groups: ", groups);
-    setChatGroups(groups); //if someone leaves the group
+  socket.on("retrievedChatGroups", (singleChats,groupChats) => { //get 1 on 1 chats
+    setChatGroups(singleChats); //update single chat groups
+    
+    var members = [];
+    var groups = [];
+    for(let i = 0;i<groupChats.length;i++) { //update group chat groups
+      for(let j = 0;j<groupChats[i].members.length;j++) {
+          if(groupChats[i].members[j] != location.state.name){
+            members.push(groupChats[i].members[j]);
+          }
+      }
+      groups.push({members:members});
+      members = [];
+    }
+  
+    setGroups(groups); 
   });
  
 
   socket.on("updatedChatGroups", () => { //get updated chat groups
-    socket.emit("getChatGroups", location.state.name, socket.id);
+    socket.emit("getChatGroups", location.state.name, socket.id); 
   })
   socket.on("updatedMemberList", members => { //update online/offline members lists
     var online = new Array();
@@ -66,7 +79,7 @@ export default function Home() {
         }
       }
     }
-
+    console.log(group);
     setGroups(group);
   })
 
@@ -130,9 +143,8 @@ export default function Home() {
 
         </div>
 
-
-        {groups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => {  socket.emit("leaveGroup",location.state.name, groups.room) }}>leave group</button></div>))}
-        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { socket.emit("leaveGroup",location.state.name, groups.room) }}>leave group</button></div>))}
+        {groups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.members + ""} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => {  socket.emit("leaveGroup",location.state.name, groups.room,"groupChat") }}>leave group</button></div>))}
+        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { socket.emit("leaveGroup",location.state.name, groups.room,"singleChat") }}>leave group</button></div>))}
       </div>
       <div className='homeFiller'>
 
