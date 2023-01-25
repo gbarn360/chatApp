@@ -85,24 +85,20 @@ io.on('connection', socket => {
 
     socket.on("leaveGroup", (user, room, type) => {
 
+
         leaveGroup(user, room, type);
         io.emit("updatedChatGroups");
     })
 
-    socket.on("createGroup", (userID,user,members) => {
+    socket.on("createGroup", (userID,user,members,date) => {
 
         let room = createGroupRoom();
         members.push(user);
-        groupRooms.push({ members:members, room: room })
+        groupRooms.push({ members:members, room: room,date:date })
 
-        io.to(userID).emit("createdGroupRoom", room);
+        io.emit("createdGroupRoom", room);
     })
-    socket.on("getGroupRoom", (room, id, user) => {
-        let groupRoom = getGroupRoom(user);
-        socket.join(room);
-        
-        io.to(id).emit("retrievedGroupRoom", groupRoom);
-    })
+ 
 
 })
 var members = [];
@@ -138,7 +134,7 @@ const leaveGroup = (user, room,type) => {
     if(type == "groupChat"){
 
         for(let i = 0;i<groupRooms.length; i++) {
-            if(groupRooms[i].roomNumber == room) {
+            if(groupRooms[i].room == room) {
 
                 for(let j = 0; j < groupRooms[i].members.length; j++) {
 
@@ -190,7 +186,7 @@ const getGroupRoom = (user) => {
     for (let i = 0; i < groupRooms.length; i++) {
         for (let j = 0; j < groupRooms[i].members.length; j++) {
             if (groupRooms[i].members[j] == user) {
-                groupMembers[index] = {members:groupRooms[i].members};
+                groupMembers[index] = {members:groupRooms[i].members,date:groupRooms[i].date,room:groupRooms[i].room};
                 index++;
             }
         }

@@ -275,7 +275,7 @@
 
 .signInCover {
     width: 50%;
-    background-color: rebeccapurple;
+    background-color: rgb(117, 77, 158);
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -291,7 +291,7 @@
 } */
 
 .createAccountCover {
-    background-color: rgb(167, 71, 47);
+    background-color: rgb(211, 97, 68);
     width: 50%;
     top: 0px;
     left: 50%;
