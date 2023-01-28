@@ -56,10 +56,9 @@ io.on('connection', socket => {
     })
 
     socket.on("getRoom", (user1, user2, date) => {
-
             
+        console.log(user1, user2);
         var roomIndex = getRoom(user1, user2);
-
         if (roomIndex != -1) { //room exists
             let roomNumber = rooms[roomIndex].roomNumber;
             socket.join(roomNumber);

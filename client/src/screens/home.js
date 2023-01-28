@@ -16,7 +16,6 @@ export default function Home() {
   const [offlineUsers, setOfflineUsers] = useState(location.state.offline);
   const [chatGroups, setChatGroups] = useState([]); //used for displaying 1 on 1 chats
   const [groups, setGroups] = useState([]); //used for displaying 1 on * chats
-  const [name, setName] = useState([]);
 
   useEffect(() => {
     socket.emit("getMemberList") ; //get online/offline members when navigated to home page
@@ -25,6 +24,7 @@ export default function Home() {
 
 
   socket.on("retrievedChatGroups", (singleChats,groupChats) => { //getting chats
+    console.log(singleChats);
     setChatGroups(singleChats); //update single chat groups
     var members = [];
     var date;
@@ -87,7 +87,7 @@ export default function Home() {
       e.stopPropagation();
       return;
     }
-    navigate("/home/directMessage", { state: { name: name, visitorName: groups.user } });
+    navigate("/home/directMessage", { state: { name: location.state.name, visitorName: groups.user } });
   };
 
   const setCheckedUsers = ()=>{
