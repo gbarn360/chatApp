@@ -44,20 +44,23 @@ io.on('connection', socket => {
     socket.on("uploadMessage", (message, room) => {
 
         memberMessages.push({ message: message, room: room });
-
         let messages = getMessages(room);
 
         io.to(room).emit("retrievedMessages", messages);
 
     })
     socket.on("getMessages", room => {
+        console.log("room", room);
+        console.log("groupRooms",groupRooms);
         let messages = getMessages(room);
         io.to(room).emit("retrievedMessages", messages);
     })
-
+    socket.on("joinGroupRoom",room=>{
+        socket.join(room);
+        io.emit("joinedRoom",room);
+    })
     socket.on("getRoom", (user1, user2, date) => {
             
-        console.log(user1, user2);
         var roomIndex = getRoom(user1, user2);
         if (roomIndex != -1) { //room exists
             let roomNumber = rooms[roomIndex].roomNumber;
@@ -78,7 +81,6 @@ io.on('connection', socket => {
     socket.on("getChatGroups", (user, id) => {
         let singleChats = getChatGroups(user);
         let groupChats = getGroupRoom(user)
-        console.log(groupChats);
         io.to(id).emit("retrievedChatGroups", singleChats, groupChats);
     })
 
@@ -89,13 +91,18 @@ io.on('connection', socket => {
         io.emit("updatedChatGroups");
     })
 
-    socket.on("createGroup", (userID,user,members,date) => {
+    socket.on("createGroup", (user,members,date) => {
 
         let room = createGroupRoom();
+        socket.join(room);
         members.push(user);
         groupRooms.push({ members:members, room: room,date:date })
+        let roomIDs = [];
+        for(let i = 0; i < groupRooms.length; i++){
+            roomIDs.push(groupRooms[i].room);
+        }
 
-        io.emit("createdGroupRoom", room);
+        io.emit("createdGroupRoom",roomIDs);
     })
  
 

@@ -14,21 +14,13 @@ export default function DirectMessage() {
     const [messages,setMessages] = useState([]);
     const [onlineUsers,setOnlineUsers] = useState([]);
     const [offlineUsers,setOfflineUsers] = useState([]);
-    const [room,setRoom] = useState();
 
     useEffect(()=>{
-      let date = getDate();
-      let modifiedDate = date.split(" ")[0];
+        socket.emit("joinGroupRoom",location.state.room);
       socket.emit("getMemberList"); 
-      socket.emit("getRoom",location.state.name,location.state.visitorName,modifiedDate);
-
     },[])
 
 
-    socket.on("retrievedRoom",room =>{
-        setRoom(room);
-        socket.emit("getMessages",room);
-    })
 
     socket.on("updatedMemberList",members=>{
       var online = new Array();
@@ -43,9 +35,16 @@ export default function DirectMessage() {
       }
       setOnlineUsers(online);
       setOfflineUsers(offline);
+
+    })
+
+    socket.on("joinedRoom",()=>{
+        console.log("joinedRoom",location.state.room);
+        socket.emit("getMessages",location.state.room);
     })
 
     socket.on("retrievedMessages",messages=>{
+        console.log("test");
         setMessages(messages);
     })
 
@@ -81,7 +80,7 @@ export default function DirectMessage() {
       let date = getDate();
       let userMessage = {name:location.state.name,message:message,date:date};
       document.getElementById("input").value = "";
-      socket.emit("uploadMessage",userMessage,room);
+      socket.emit("uploadMessage",userMessage,location.state.room);
     }
   }
 
@@ -102,7 +101,7 @@ export default function DirectMessage() {
       </div>
       <div className='chatBox'>
       <div className='chatHeader'>
-          <h2>@{location.state.visitorName}</h2>
+          <h2>@{location.state.visitorName.map(user=>(<>{user + " "}</>))}</h2>
         </div>
         
         {messages.map(item=>(<MessageItem username={item.name} messageItem={item.message} date={item.date}/>))}

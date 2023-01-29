@@ -24,8 +24,6 @@ export default function Home() {
 
 
   socket.on("retrievedChatGroups", (singleChats,groupChats) => { //getting chats
-    console.log(singleChats);
-    setChatGroups(singleChats); //update single chat groups
     var members = [];
     var date;
     var groups = [];
@@ -44,6 +42,8 @@ export default function Home() {
       members = [];
     }
     setGroups(groups);  //update group chat groups
+    setChatGroups(singleChats); //update single chat groups
+
 
   });
  
@@ -68,11 +68,12 @@ export default function Home() {
     setOnlineUsers(online);
     setOfflineUsers(offline);
 
-    socket.emit("getChatGroups",location.state.name, socket.id); //get chat groups 
+    socket.emit("getChatGroups",location.state.name, socket.id); //get single and group chats
     
   })
 
-  socket.on("createdGroupRoom", room => { //returns a created room
+  socket.on("createdGroupRoom", rooms => { //returns a created room
+
     socket.emit("getChatGroups",location.state.name, socket.id); //get chat groups 
   })
   
@@ -87,7 +88,12 @@ export default function Home() {
       e.stopPropagation();
       return;
     }
-    navigate("/home/directMessage", { state: { name: location.state.name, visitorName: groups.user } });
+    if(groups.user != undefined)
+      navigate("/home/directMessage", { state: { name: location.state.name, visitorName: groups.user } });
+    else    
+       navigate("/home/groupMessage", { state: { name: location.state.name, visitorName: groups.members, room:groups.room } });
+    
+
   };
 
   const setCheckedUsers = ()=>{
@@ -102,7 +108,7 @@ export default function Home() {
     let date = getDate();
     let modifiedDate = date.split(" ")[0];
 
-    socket.emit("createGroup",socket.id,location.state.name, checkedUsers,modifiedDate);
+    socket.emit("createGroup",location.state.name, checkedUsers,modifiedDate);
     
     
   }
@@ -161,7 +167,7 @@ export default function Home() {
 
         </div>
         {groups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.members + ""} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => {  socket.emit("leaveGroup",location.state.name, groups.room,"groupChat") }}>leave group</button></div>))}
-        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup">{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { socket.emit("leaveGroup",location.state.name, groups.room,"singleChat") }}>leave group</button></div>))}
+        {chatGroups.map(groups => (<div onClick={(event) => navigateToChat(event, groups)} className="chatGroup" >{groups.user} <p className='chatGroupDate'>Created: {groups.date}</p><button className='button' id="leaveGroup" onClick={() => { socket.emit("leaveGroup",location.state.name, groups.room,"singleChat") }}>leave group</button></div>))}
       </div>
       <div className='homeFiller'>
 

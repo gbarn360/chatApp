@@ -4,6 +4,7 @@ import SignIn from "./screens/signIn";
 import CreateAccount from "./screens/createAccount";
 import Home from "./screens/home";
 import DirectMessage from "./screens/directMessage";
+import GroupMessage from "./screens/groupMessage";
 import "./App.css";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/createAccount" element={<CreateAccount />} />
         <Route path="/home"element={<Home />} />
         <Route path="/home/directMessage" element={<DirectMessage />} />
+        <Route path="/home/GroupMessage" element={<GroupMessage />} />
       </Routes>
     </Router>
   );
