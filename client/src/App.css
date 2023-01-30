@@ -85,10 +85,11 @@
     left: 93%;
 }
 
-.list{
+.list {
     display: flex;
     flex-wrap: wrap;
 }
+
 .manageGroupModal {
     width: 45%;
     height: 300px;
@@ -197,6 +198,7 @@
     border-bottom: 1px solid #818181;
     display: flex;
 }
+
 .testGroup {
     margin: 10px 20px;
     padding: 10px;
@@ -283,7 +285,7 @@
 
 .signInCover {
     width: 50%;
-    background-color: rgb(117, 77, 158);
+    background-color: rgb(77, 77, 158);
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -299,7 +301,7 @@
 } */
 
 .createAccountCover {
-    background-color: rgb(211, 97, 68);
+    background-color: rgb(81, 176, 83);
     width: 50%;
     top: 0px;
     left: 50%;
